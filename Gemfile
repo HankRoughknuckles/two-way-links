@@ -9,6 +9,7 @@ gem 'puma', '~> 3.11'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'resque', '~> 2.0.0'
 gem 'mechanize', '2.7.6'
+gem 'domainatrix', '~> 0.0.11'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
