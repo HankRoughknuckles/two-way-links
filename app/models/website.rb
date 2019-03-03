@@ -2,22 +2,13 @@ class Website < ApplicationRecord
   has_many :resources
 
   class << self
-    # TODO: rename this and have it take a string
-    def get_truncated_url(parsed)
+    def get_domain_and_suffix(url)
+      parsed = Domainatrix.parse(url)
       "#{parsed.domain}.#{parsed.public_suffix}"
     end
 
-    # TODO: replace with find_or_create_by
-    def upsert(url)
-      parsed = Domainatrix.parse(url)
-      website = self.find_by(domain_and_suffix: self.get_truncated_url(parsed))
-      return website if website.present?
-      return self.create(domain_and_suffix: self.get_truncated_url(parsed))
+    def find_or_create_by_url(url)
+      self.find_or_create_by(domain_and_suffix: self.get_domain_and_suffix(url))
     end
   end
-
-  # def find_or_create_by(options)
-  #   website = self.find_by(domain: options[:domain])
-  #   return website if website
-  # end
 end

@@ -16,11 +16,11 @@ ActiveRecord::Schema.define(version: 2019_03_03_092609) do
   enable_extension "plpgsql"
 
   create_table "links", force: :cascade do |t|
-    t.integer "source_id"
+    t.integer "subscriber_id"
     t.integer "target_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["source_id"], name: "index_links_on_source_id"
+    t.index ["subscriber_id"], name: "index_links_on_subscriber_id"
     t.index ["target_id"], name: "index_links_on_target_id"
   end
 
