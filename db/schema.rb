@@ -10,17 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_02_092624) do
+ActiveRecord::Schema.define(version: 2019_03_03_092609) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "links", force: :cascade do |t|
+    t.integer "source_id"
+    t.integer "target_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_id"], name: "index_links_on_source_id"
+    t.index ["target_id"], name: "index_links_on_target_id"
+  end
+
   create_table "resources", force: :cascade do |t|
     t.bigint "website_id"
-    t.string "subdomain"
-    t.string "path"
     t.string "url"
-    t.integer "reference_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["url"], name: "index_resources_on_url"

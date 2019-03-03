@@ -19,7 +19,6 @@ class Api::V1::CrawlersController < ActionController::API
     page.links.each do |link|
       puts "link = #{link.href} = #{link.text}"
       resource = Resource.find_or_create_by_url(link.href)
-      resource.increment_reference_count
 
       # enqueue(resource.id)
 
