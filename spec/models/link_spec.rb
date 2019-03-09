@@ -1,5 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Link, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:link) {  FactoryBot.create(:link) }
+
+  it 'has a target' do
+    expect(link).to respond_to :target
+  end
+
+  it 'has a subscriber' do
+    expect(link).to respond_to :subscriber
+  end
 end
