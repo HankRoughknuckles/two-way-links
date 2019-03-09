@@ -9,8 +9,13 @@ class Resource < ApplicationRecord
 
   class << self
     def find_or_create_by_url(url)
-      website = Website.upsert(url)
+      website = Website.find_or_create_by_url(url)
       self.find_or_create_by(website_id: website.id, url: url)
     end
+  end
+
+  def create_target_link_to(target)
+    link = Link.find_by(subscriber: self, target: target)
+    (self.targets << target) if link.nil?
   end
 end
