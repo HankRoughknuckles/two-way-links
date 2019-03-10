@@ -3,6 +3,35 @@ require 'rails_helper'
 describe Resource, type: :model do
   let!(:resource) { FactoryBot.create(:resource) }
 
+  describe 'validation callbacks' do
+    let(:url) { 'www.asdf.com/1' }
+    subject { Resource.create(url: url) }
+
+    describe 'when the parent website already exists' do
+      before { Website.find_or_create_by_url(url) }
+
+      it 'should not create a new website' do
+        expect { subject }.not_to change { Website.count }
+      end
+
+      it 'should add the website as the resource\'s parent' do
+        subject
+        expect(Resource.last.website.domain_and_suffix).to eq 'asdf.com'
+      end
+    end
+
+    describe 'when the parent website does not exist' do
+      it 'should create a new website' do
+        expect { subject }.to change { Website.count }.by 1
+      end
+
+      it 'should add the website as the resource\'s parent' do
+        subject
+        expect(Resource.last.website.domain_and_suffix).to eq 'asdf.com'
+      end
+    end
+  end
+
   describe 'links' do
     context 'when the resource does not link to anything' do
       it 'should have no targets' do
@@ -72,6 +101,62 @@ describe Resource, type: :model do
 
       it 'should not re-add the target' do
         expect{ subject }.not_to change { resource.targets.count }
+      end
+    end
+  end
+
+  describe '#register_links' do
+    let(:links) { [] }
+    before { allow(Resque).to receive :enqueue }
+
+    subject { resource.register_links(links) }
+
+    describe 'when there is a link to an already existing resource' do
+      let(:links) { ['test.com/test'] }
+      let!(:existing) { FactoryBot.create(:resource, url: links.first) }
+
+      it 'should create a link between this and the target' do
+        subject
+        expect(
+          resource
+          .links_as_subscriber
+          .any? { |link| link.target.url === links.first }
+        ).to eq true
+      end
+
+      it 'should not create another resource' do
+        expect{ subject }.not_to change { Resource.count }
+      end
+
+      it 'should not call the scraper on it' do
+        expect(Resque).not_to receive(:enqueue)
+        subject
+      end
+    end
+
+    describe 'when given a resource that doesn\'t exist' do
+      let(:links) { ['test.com/new'] }
+
+      it 'should create a link between this and the target' do
+        subject
+        expect(
+          resource
+          .links_as_subscriber
+          .any? { |link| link.target.url === links.first }
+        ).to eq true
+      end
+
+      it 'should create another resource' do
+        expect{ subject }.to change { Resource.count }.by(1)
+      end
+
+      it 'should create a website as that new resource\'s parent' do
+        expect{ subject }.to change { Website.count }.by(1)
+      end
+
+      it 'should call the scraper on it' do
+        expect(Resque).to receive(:enqueue)
+        subject
       end
     end
   end

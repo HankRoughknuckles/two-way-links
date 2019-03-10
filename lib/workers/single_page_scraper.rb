@@ -11,24 +11,14 @@ class SinglePageScraper
     start_time = Time.now
     logger = scraper_logger
     resource = Resource.find(resource_id)
-    page = Mechanize.new.get(resource.url)
+    link_hrefs = Mechanize.new.get(resource.url).links.map { |link| link.href }
 
     logger.info("==================================");
     logger.info("Resource: #{resource.url}");
-    page.links.each do |link|
-      target = Resource.find_or_create_by_url(link.href)
-      was_created = resource.create_target_link_to(target)
 
-      if was_created
-        logger.info("    => #{link.href}");
-      else
-        logger.info("    => #{link.href} - already present");
-      end
-      # enqueue(target.id)
-    end
-    end_time = Time.now
+    logger.info(link_hrefs)
+    resource.register_links(link_hrefs)
 
-    logger.info("started: #{start_time}, ended: #{end_time} - #{(end_time - start_time) * 1000.0}ms")
+    logger.info("Took #{(Time.now - start_time) * 1000.0}ms")
   end
-
 end

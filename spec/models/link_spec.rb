@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Link, type: :model do
-  let(:link) {  FactoryBot.create(:link) }
+  let(:link) { FactoryBot.create(:link) }
 
   it 'has a target' do
     expect(link).to respond_to :target

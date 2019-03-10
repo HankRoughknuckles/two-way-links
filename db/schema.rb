@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 2019_03_03_092609) do
     t.string "url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["url"], name: "index_resources_on_url"
+    t.index ["url"], name: "index_resources_on_url", unique: true
     t.index ["website_id"], name: "index_resources_on_website_id"
   end
 

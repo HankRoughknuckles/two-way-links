@@ -6,6 +6,6 @@ class CreateResources < ActiveRecord::Migration[5.2]
 
       t.timestamps
     end
-    add_index :resources, :url
+    add_index :resources, :url, unique: true
   end
 end
