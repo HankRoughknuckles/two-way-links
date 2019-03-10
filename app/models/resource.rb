@@ -16,6 +16,9 @@ class Resource < ApplicationRecord
 
   def create_target_link_to(target)
     link = Link.find_by(subscriber: self, target: target)
-    (self.targets << target) if link.nil?
+    return false if link.present?
+
+    self.targets << target
+    return true
   end
 end
